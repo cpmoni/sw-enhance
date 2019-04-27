@@ -66,6 +66,7 @@ class Summoner:
             rune_id, s = poss[i]
             print(self.runes[rune_id].str_with_subs())
             print('On {}, Score {}'.format(self.find_rune(rune_id),s))
+            print(rune_id)
             
     def analyze_grinds(self):
         counts = {}

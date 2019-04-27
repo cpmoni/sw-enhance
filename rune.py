@@ -17,7 +17,7 @@ class Rune:
         self.location = rj['occupied_id']
         self.slot = rj['slot_no']
         self.stars = rj['class']
-        self.quality = rj['rank']
+        self.grade = rj['extra']
         self.set = rj['set_id']
         self.level = rj['upgrade_curr']
         self.sell_value = rj['sell_value']
@@ -27,7 +27,6 @@ class Rune:
         
         self.innate_stat = rj['prefix_eff'][0]
         self.innate_value = rj['prefix_eff'][1]
-        self.extra = rj['extra']
         
         self.subs = []
         for subj in rj['sec_eff']:
@@ -64,15 +63,6 @@ class Rune:
     def calc_reapp(self):
         self.reapp = 0.0
         
-        priority_sets = ['Violent', 'Swift', 'Despair', 'Will', 'Vampire', 'Fight', 'Revenge']
-        if self.stars != 6 or self.level < 12 or self.quality < 5: return
-        if self.get_set() not in priority_sets and self.slot in [1,3,5]: return
-        
-        bad_stats = ['HP+','ATK+','DEF+']
-        good_stats = ['SPD','HP%']
-        support_stats = ['RES','ACC']
-        nuker_stats = ['ATK%','CR','CD']
-        
         scores = []
         w = []
         
@@ -80,6 +70,16 @@ class Rune:
         else: main_slot = 0
         scores.append(main_slot)
         w.append(1)
+        
+        priority_sets = ['Violent', 'Swift', 'Despair', 'Will', 'Vampire', 'Fight', 'Revenge']
+        if self.stars != 6 or self.level < 12: return
+        if not (self.get_set() == 'Violent' and self.grade >= 4 and main_slot) and self.grade < 5: return
+        if self.get_set() not in priority_sets and not main_slot: return
+        
+        bad_stats = ['HP+','ATK+','DEF+']
+        good_stats = ['SPD','HP%','ACC']
+        support_stats = ['RES']
+        nuker_stats = ['ATK%','CR','CD']
         
         bad_rolls = 0
         good_rolls = 0
@@ -98,7 +98,9 @@ class Rune:
             elif stat == 'DEF%': def_rolls += rolls
             
         count_bad = bad_rolls
-        if main_slot and self.get_main_stat() in nuker_stats: count_bad += support_rolls+def_rolls
+        if main_slot and self.get_main_stat() in nuker_stats: 
+            count_bad += support_rolls
+            if self.get_main_stat() in ['ATK%','CR']: count_bad += def_rolls
         elif main_slot and self.get_main_stat() in support_stats: count_bad += nuker_rolls
         if nuker_rolls > 2 and support_rolls > 2: count_bad += min(support_rolls,nuker_rolls)
         scores.append(count_bad/8.0)
@@ -134,9 +136,10 @@ class Rune:
         sub = self.subs[i] 
         m = rune['substat'][sub['stat']]['max'][self.stars]
         return math.ceil(sub['value']/m)
+    def get_grade(self): return get_grade(self.grade)
     
     def str_with_subs(self):
-        ans = '{}{} {} Slot {} {} Rune'.format(self.stars,'\u2605',self.get_set(),self.slot,self.get_main_stat())
+        ans = '{} {}{} {} Slot {} {} Rune'.format(self.get_grade(),self.stars,'\u2605',self.get_set(),self.slot,self.get_main_stat())
         if self.innate_stat != 0:
             ans += '\n    Innate: {} {}'.format(self.innate_value,self.get_innate_stat())
         for i in range(len(self.subs)):
