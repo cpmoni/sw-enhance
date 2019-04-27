@@ -7,7 +7,8 @@ This is a project for writing custom optimization tools for Summoners War.  The 
 ### Current Features
 
 * Import data from SWEX json file
-* For grinds in inventory, find runes that can use them
+* Search for runes to reapp
+* For grinds in inventory, find runes (that don't need to be reapped) that can use them
 
 ### Coming Features
 

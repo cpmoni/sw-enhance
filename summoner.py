@@ -45,6 +45,27 @@ class Summoner:
             location = self.mons[location]
         else: location = 'Inventory'
         return location
+        
+    def print_runes(self):
+        for rune_id in self.runes:
+            print(self.runes[rune_id].str_with_subs())
+            print(self.find_rune(rune_id))
+            print()
+            
+    def analyze_reapps(self,n=10):
+        poss = []
+        for rune_id in self.runes:
+            s = self.runes[rune_id].reapp 
+            if s > 0:
+               poss.append((rune_id,s)) 
+               
+        poss.sort(key=lambda x: x[1],reverse=True)
+        for i in range(n):
+            print('Option',i+1)
+            
+            rune_id, s = poss[i]
+            print(self.runes[rune_id].str_with_subs())
+            print('On {}, Score {}'.format(self.find_rune(rune_id),s))
             
     def analyze_grinds(self):
         counts = {}
@@ -55,16 +76,15 @@ class Summoner:
             else:
                 counts[k] = 1
                 poss[k] = []
-                m = grindstone[grind.stat]['range'][grind.grade]['max']
                 
                 for rune_id in self.runes:
                     r = self.runes[rune_id]
-                    if r.level < 12: continue
+                    if r.level < 12 or r.reapp > .5: continue
                     if r.set != grind.set and grind.set != 99: continue
                     for sub in r.subs:
                         if sub['stat'] == grind.stat:
-                            if sub['grind'] < m:
-                                poss[k].append((r,m-sub['grind'],grind.stat))
+                            if sub['grind'] < grind.get_max():
+                                poss[k].append((r,grind.get_max()-sub['grind'],grind.stat))
                                 
         for k in poss:
             sset, stat, grade = k
