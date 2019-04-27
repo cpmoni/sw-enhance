@@ -1,0 +1,17 @@
+item_master_type: 
+29, rift beast crystals
+57, blessings
+58, ancient crystals
+11, essences
+	first two digits 13: high, 12: mid, 11: low
+	last digit: 1 water, 2 fire, 3 wind, 4 light, 5 dark, 6 magic
+12, monster summoning pieces
+9 is summoning stuff	
+	1 unknown
+	2 mystical
+	8 summoning stones
+	9 legendary pieces
+	10 ld pieces
+
+
+	

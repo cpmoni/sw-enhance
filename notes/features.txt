@@ -1,0 +1,6 @@
+save profile
+monster priority
+monster stats
+monster skills
+actual damage
+gems and grinds on runes that aren't helping stat priorities
